@@ -10,26 +10,52 @@
 package model;
 
 public class OrderDetail {
+	private long no;
+	private Customer customer;
+	private Item item;
+	private String orderDate;
+	private int quantity;
+	private Tax tax;
+	private int status;
 
 	public OrderDetail(long no, Customer customer, Item item, String orderDate,
 			int quantity, Tax tax, int status) {
+		this.no = no;
+		this.customer = customer;
+		this.item = item;
+		this.orderDate = orderDate;
+		this.quantity = quantity;
+		this.tax = tax;
+		this.status = status;
 	
 	}
 
 	public Item getItem() {
-		return null;
+		return this.item;
 	}
 
 	public Tax getTax() {
-		return null;
+		return this.tax;
 	}
 
 	public long getNo() {
-		return 0;
+		return this.no;
 	}
 
 	public int getQuantity() {
-		return 0;
+		return this.quantity;
+	}
+
+	public Customer getCustomer () {
+		return this.customer;
+	}
+	
+	public String getOrderDate () {
+		return this.orderDate;
+	}
+	
+	public int getStatus () {
+		return this.status;
 	}
 
 }
