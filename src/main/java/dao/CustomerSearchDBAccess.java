@@ -13,12 +13,15 @@ public class CustomerSearchDBAccess {
     private Connection createConnection () throws Exception {
         Connection con = null;
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:65534/KIDDA_LA",
                 "user1",
                 "pass1"
             );
         } catch (SQLException e) {
+            throw new Exception("【エラー】\nDB接続処理に失敗しました！\n管理者に連絡してください。");
+        } catch (ClassNotFoundException e) {
             throw new Exception("【エラー】\nDB接続処理に失敗しました！\n管理者に連絡してください。");
         }
         return con;
