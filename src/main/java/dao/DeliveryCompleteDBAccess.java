@@ -12,7 +12,7 @@ package dao;
 public class DeliveryCompleteDBAccess {
 
 	public int completeDeliveryByCustId(int custId) throws Exception {
-
+//..
 		return 0;
 	}
 }
