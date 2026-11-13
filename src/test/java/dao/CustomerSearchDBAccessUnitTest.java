@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import model.Customer;
 
-public class CustomerSearchDBAccessTest {
+public class CustomerSearchDBAccessUnitTest {
 
     private CustomerSearchDBAccess db;
 

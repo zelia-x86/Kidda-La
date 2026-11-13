@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class CustomerTest {
+public class CustomerTestUnit {
     @Test
     public void getters () {
         int custId = 1;
