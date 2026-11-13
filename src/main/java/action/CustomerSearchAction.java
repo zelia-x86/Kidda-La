@@ -8,21 +8,19 @@ import dao.CustomerSearchDBAccess;
 public class CustomerSearchAction {
 
 	public String[][] execute(String[] data) throws Exception {
-		String tel = data[0].trim();
-		String kana = data[1].trim();
+		data[0] = data[0].strip().replaceAll("[　\\s]+", " ");
+		data[1] = data[1].strip().replaceAll("[　\\s]+", " ");
 
 		ArrayList<Customer> arr = new ArrayList<Customer>();
 
 		CustomerSearchDBAccess search = new CustomerSearchDBAccess();
 
-		if (tel.isEmpty() && kana.isEmpty()) {
-			throw new Exception("【エラー】\nDB電話番号と氏名カナのいずれか、また両方を入力してください。");
-		} else if (tel.isEmpty()) {
-			arr = search.searchCustomerByKana(kana);
-		} else if (kana.isEmpty()) {
-			arr = search.searchCustomerByTel(tel);
+		if (data[0].isEmpty()) {
+			arr = search.searchCustomerByKana(data[1]);
+		} else if (data[1].isEmpty()) {
+			arr = search.searchCustomerByTel(data[0]);
 		} else {
-			arr = search.searchCustomer(tel, kana);
+			arr = search.searchCustomer(data[0], data[1]);
 		}
 
 		String[][] ret = new String[arr.size()][];
