@@ -1,53 +1,61 @@
 package integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import action.CustomerSearchAction;
+import dao.CustomerSearchDBAccess;
+import model.Customer;
+import model.OrderControlUtility;
 
 public class CustomerSearchActionAndCustomerSearchDBAccessTest {
 
-    private  CustomerSearchAction action;
+    private  CustomerSearchDBAccess db;
+    private CustomerSearchAction action;
 
     @BeforeEach
     public void prepare () {
+        db = new CustomerSearchDBAccess();
         action = new CustomerSearchAction();
     }
 
-    @Test
-    public void case1 () throws Exception {
-        String[] input = {"09012345678", ""};
-        String[][] result = action.execute(input);
-        assertEquals(1, result.length);
+    @Test 
+    public void CustomerSearchDBAccess () {
+        CustomerSearchDBAccess customerSearchDBAccess = new CustomerSearchDBAccess();
+        assertInstanceOf(CustomerSearchDBAccess.class, customerSearchDBAccess);
     }
 
-    
     @Test
-    public void case2 () throws Exception {
+    public void Customer () {
+        Customer customer = new Customer();
+        assertInstanceOf(Customer.class, customer);
+    }
+
+    @Test 
+    public void searchCustomerByKana () throws Exception {
         String[] input = {"", "マユミ"};
-        String[][] result = action.execute(input);
-        assertEquals(1, result.length);
+        String[][] result1 = action.execute(input);
+        String[][] result2 = OrderControlUtility.customerToArray(db.searchCustomerByKana("マユミ"));
+        assertArrayEquals(result1, result2);
     }
 
-    @Test
-    public void case3 () throws Exception {
-        String[] input = {"09012345678", "マユミ"};
-        String[][] result = action.execute(input);
-        assertEquals(1, result.length);
+    @Test 
+    public void searchCustomerByTel () throws Exception {
+        String[] input = {"", "マユミ"};
+        String[][] result1 = action.execute(input);
+        String[][] result2 = OrderControlUtility.customerToArray(db.searchCustomerByTel("09012345678"));
+        assertArrayEquals(result1, result2);
     }
 
-    @Test
-    public void case4 () throws Exception {
-        String[] input = {"01012345678", ""};
-        assertEquals(0, action.execute(input).length);
-    }
 
-    @Test
-    public void case5 () throws Exception {
-        String[] input = {"09012345678", "　マユミ"};
-        String[][] result = action.execute(input);
-        assertEquals(1, result.length);
-    }    
+    @Test 
+    public void searchCustomer () throws Exception {
+        String[] input = {"", "マユミ"};
+        String[][] result1 = action.execute(input);
+        String[][] result2 = OrderControlUtility.customerToArray(db.searchCustomer("09012345678", "マユミ"));
+        assertArrayEquals(result1, result2);
+    }
 }
