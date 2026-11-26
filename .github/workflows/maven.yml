@@ -21,31 +21,39 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - uses: mirromutth/mysql-action@v1.1
-      with:
-        host port: 3800
-        container port: 65534
-        character set server: 'utf8'
-        collation server: 'utf8_general_ci'
-        mysql database: 'KIDDA_LA'
-        mysql user: 'user1'
-        mysql password: 'pass1'
-
-    - name: Install MySQL client
-      run: sudo apt-get install -y mysql-client
-      
-    - name: Wait for MySQL
+    - name: Install MySQL
       run: |
-        until mysqladmin ping -h 127.0.0.1 -P 3800 -u user1 -ppass1 --silent; do
-          echo "Waiting for MySQL..."
+        sudo apt-get update
+        sudo apt-get install -y mysql-server mysql-client
+
+    - name: Start MySQL
+      run: |
+        sudo sed -i 's/^port\s*=.*/port = 65534/' /etc/mysql/mysql.conf.d/mysqld.cnf
+        sudo sed -i 's/^bind-address.*/bind-address = 127.0.0.1/' /etc/mysql/mysql.conf.d/mysqld.cnf
+
+        sudo systemctl enable mysql
+        sudo systemctl restart mysql
+
+        for i in {1..30}; do
+          if sudo mysqladmin --protocol=TCP -h 127.0.0.1 -P 65534 ping --silent; then
+            echo "MySQL is ready!"
+            exit 0
+          fi
           sleep 2
         done
 
+        echo "MySQL failed to start"
+        sudo journalctl -u mysql --no-pager -n 100
+        exit 1
+
+
     - name: Bootstrap database
       run: |
-        mysql -h 127.0.0.1 -P 3800 \
+        sudo mysql -h 127.0.0.1 -P 65534 \
+          -u user1 -ppass1 KIDDA_LA < docs/sql/1_データベース定義.sql
+        mysql -h 127.0.0.1 -P 65534 \
           -u user1 -ppass1 KIDDA_LA < docs/sql/2_テーブル定義.sql
-        mysql -h 127.0.0.1 -P 3800 \
+        mysql -h 127.0.0.1 -P 65534 \
           -u user1 -ppass1 KIDDA_LA < docs/sql/3_データ.sql
 
     - name: Build with Maven
