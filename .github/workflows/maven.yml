@@ -20,6 +20,26 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+
+    - uses: mirromutth/mysql-action@v1.1
+      with:
+        host port: 65534
+        character set server: 'utf8'
+        collation server: 'utf8_general_ci'
+        mysql database: 'KIDDA_LA'
+        mysql user: 'user1'
+        mysql password: 'pass1'
+
+    - name: Install MySQL client
+      run: sudo apt-get install -y mysql-client
+
+    - name: Bootstrap database
+      run: |
+        mysql -h 127.0.0.1 -P 65534 \
+          -u user1 -ppass1 KIDDA_LA < docs/sql/2_テーブル定義.sql
+        mysql -h 127.0.0.1 -P 65534 \
+          -u user1 -ppass1 KIDDA_LA < docs/sql/3_データ.sql
+
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
