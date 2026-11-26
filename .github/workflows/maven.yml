@@ -12,6 +12,22 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: KIDDA_LA
+          MYSQL_USER: user1
+          MYSQL_PASSWORD: pass1
+        ports:
+          - 65534:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -prootpass"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
@@ -21,21 +37,11 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Install MySQL
+    - name: Wait for MySQL
       run: |
-        sudo apt-get update
-        sudo apt-get install -y mysql-server mysql-client
-
-    - name: Start MySQL
-      run: |
-        sudo sed -i 's/^port\s*=.*/port = 65534/' /etc/mysql/mysql.conf.d/mysqld.cnf
-        sudo sed -i 's/^bind-address.*/bind-address = 127.0.0.1/' /etc/mysql/mysql.conf.d/mysqld.cnf
-
-        sudo systemctl enable mysql
-        sudo systemctl restart mysql
-
         for i in {1..30}; do
-          if sudo mysqladmin --protocol=TCP -h 127.0.0.1 -P 65534 ping --silent; then
+          if mysqladmin ping -h 127.0.0.1 -P 65534 \
+            -uuser1 -ppass1 --silent; then
             echo "MySQL is ready!"
             exit 0
           fi
@@ -43,8 +49,9 @@ jobs:
         done
 
         echo "MySQL failed to start"
-        sudo journalctl -u mysql --no-pager -n 100
+        docker ps -a
         exit 1
+
 
 
     - name: Bootstrap database
