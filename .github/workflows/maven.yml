@@ -32,7 +32,14 @@ jobs:
         mysql password: 'pass1'
 
     - name: Install MySQL client
-      run: sudo apt-get install -y mysql-client
+      run: sudo apt-get install -y mysql-
+      
+    - name: Wait for MySQL
+      run: |
+        until mysqladmin ping -h 127.0.0.1 -P 3800 -u user1 -ppass1 --silent; do
+          echo "Waiting for MySQL..."
+          sleep 2
+        done
 
     - name: Bootstrap database
       run: |
