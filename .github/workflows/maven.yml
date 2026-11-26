@@ -56,8 +56,6 @@ jobs:
 
     - name: Bootstrap database
       run: |
-        sudo mysql -h 127.0.0.1 -P 65534 \
-          -u user1 -ppass1 KIDDA_LA < docs/sql/1_データベース定義.sql
         mysql -h 127.0.0.1 -P 65534 \
           -u user1 -ppass1 KIDDA_LA < docs/sql/2_テーブル定義.sql
         mysql -h 127.0.0.1 -P 65534 \
